@@ -12,7 +12,7 @@ import os
 
 class Bot(object):
     def __init__(self):
-        self.process_name = "WoW.exe"
+        self.process_name = "Terraria.exe"
         if not self.check_process():
             os._exit(0)
         pyautogui.PAUSE = 0.01
