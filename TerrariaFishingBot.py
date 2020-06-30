@@ -52,3 +52,4 @@ TerraBot()
 
 
 
+"""Set sound mixer to default device, make sounddevice use the default device, figure out keyboard handling, which does not interfere with the loop."""
