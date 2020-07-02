@@ -9,7 +9,6 @@ class TerraBot(object):
     def __init__(self):
         self.on = False
         self.mouse = Controller()
-        sd.default.device = 1
         self.start_program()
 
     def on_release(self, key):
@@ -31,25 +30,19 @@ class TerraBot(object):
                 break
 
     def callback(self, indata, outdata, frames, time, status):
+        print(indata if indata[0] > 0.1 and indata[1] > 0.1 else 0)
         volume_norm = np.linalg.norm(indata) * 10
-        print("|" * int(volume_norm))
-        time.sleep(0.01)
-        self.mouse.release(Button.left)
-        time.sleep(2)
 
     def fishing_loop(self):
         self.mouse.press(Button.left)
-        duration = 15
-        with sd.Stream(channels=2, callback=self.callback):
+        duration = 150
+        with sd.Stream(channels=1, callback=self.callback):
             sd.sleep(int(duration * 1000))
-
 
 
 TerraBot()
 
 
-
-
-
+f
 
 """Set sound mixer to default device, make sounddevice use the default device, figure out keyboard handling, which does not interfere with the loop."""
