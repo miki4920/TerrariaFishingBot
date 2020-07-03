@@ -1,15 +1,20 @@
 from pynput import keyboard
+from SoundRecorder import SoundRecorder
 from pynput.mouse import Controller, Button
 import time
-import sounddevice as sd
-import numpy as np
 
 
 class TerraBot(object):
     def __init__(self):
         self.on = False
         self.mouse = Controller()
+        self.sound_recorder = SoundRecorder()
         self.start_program()
+
+    def click(self, button):
+        self.mouse.press(button)
+        time.sleep(0.05)
+        self.mouse.release(button)
 
     def on_release(self, key):
         try:
@@ -18,8 +23,6 @@ class TerraBot(object):
         except AttributeError:
             pass
 
-    duration = 5.5  # seconds
-
     def start_program(self):
         listener = keyboard.Listener(
             on_release=self.on_release)
@@ -27,22 +30,13 @@ class TerraBot(object):
         while True:
             while self.on:
                 self.fishing_loop()
-                break
-
-    def callback(self, indata, outdata, frames, time, status):
-        print(indata if indata[0] > 0.1 and indata[1] > 0.1 else 0)
-        volume_norm = np.linalg.norm(indata) * 10
 
     def fishing_loop(self):
-        self.mouse.press(Button.left)
-        duration = 150
-        with sd.Stream(channels=1, callback=self.callback):
-            sd.sleep(int(duration * 1000))
+        self.click(Button.left)
+        time.sleep(1)
+        if self.sound_recorder.check_volume():
+            self.click(Button.left)
+        time.sleep(2)
 
 
 TerraBot()
-
-
-f
-
-"""Set sound mixer to default device, make sounddevice use the default device, figure out keyboard handling, which does not interfere with the loop."""
