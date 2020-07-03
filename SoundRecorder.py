@@ -30,7 +30,7 @@ class SoundRecorder(object):
         while True:
             data = stream.read(CHUNK)
             rms = audioop.rms(data, 2)
-            if rms > 20000:
+            if rms > 18000:
                 if not second_sound:
                     second_sound = True
                 else:
