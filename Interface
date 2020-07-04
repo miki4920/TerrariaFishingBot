@@ -13,24 +13,13 @@ def start_interface(name, *args):
 class TerraInterface(wx.Frame):
     def __init__(self, parent, title):
         self.bot = TerraBot()
-        self.thread = Thread(target=self.bot.start_program)
-        self.thread.daemon = True
         super(TerraInterface, self).__init__(parent, title=title, size=(250, 150))
         self.panel = wx.Panel(self)
         self.sld = wx.Slider(self.panel, value=18500, minValue=10000, maxValue=25000,
                              style=wx.SL_HORIZONTAL | wx.SL_LABELS)
         self.initialise()
-        listener = keyboard.Listener(
-            on_release=self.on_release)
-        listener.start()
-        self.thread.start()
-
-    def on_release(self, key):
-        try:
-            if key.char == "f":
-                self.bot.on = not self.bot.on
-        except AttributeError:
-            pass
+        self.initialise_listener()
+        self.initialise_bot()
 
     def initialise(self):
         vbox = wx.BoxSizer(wx.VERTICAL)
@@ -40,10 +29,26 @@ class TerraInterface(wx.Frame):
         self.Centre()
         self.Show(True)
 
+    def initialise_listener(self):
+        listener = keyboard.Listener(
+            on_release=self.on_release)
+        listener.start()
+
+    def initialise_bot(self):
+        thread = Thread(target=self.bot.start_program)
+        thread.daemon = True
+        thread.start()
+
+    def on_release(self, key):
+        try:
+            if key.char == "f":
+                self.bot.on = not self.bot.on
+        except AttributeError:
+            pass
+
     def on_scroll(self, e):
         value = e.GetEventObject().GetValue()
         self.bot.volume = value
 
 
 start_interface("TerraFishingBot")
-

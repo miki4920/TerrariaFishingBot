@@ -1,4 +1,3 @@
-
 from SoundRecorder import SoundRecorder
 from pynput.mouse import Controller, Button
 import time
@@ -26,4 +25,3 @@ class TerraBot(object):
         if self.sound_recorder.check_volume(self.volume):
             self.click(Button.left)
         time.sleep(2)
-
