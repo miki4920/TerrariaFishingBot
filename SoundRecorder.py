@@ -32,7 +32,6 @@ class SoundRecorder(object):
             rms = audioop.rms(data, 2)
 
             if rms > volume:
-                print(rms)
                 if not second_sound:
                     second_sound = True
                 else:
