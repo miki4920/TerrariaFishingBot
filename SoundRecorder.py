@@ -5,7 +5,7 @@ CHUNK = 1024
 FORMAT = pyaudio.paInt16
 CHANNELS = 2
 RATE = 44100
-RECORD_SECONDS = 30
+RECORD_SECONDS = 10
 
 
 class SoundRecorder(object):
@@ -19,7 +19,7 @@ class SoundRecorder(object):
             if dev['name'] == 'Stereo Mix (Realtek(R) Audio)' and dev['hostApi'] == 0:
                 return dev['index']
 
-    def check_volume(self):
+    def check_volume(self, volume):
         stream = self.p.open(format=FORMAT,
                              channels=CHANNELS,
                              rate=RATE,
@@ -27,10 +27,12 @@ class SoundRecorder(object):
                              input_device_index=self.dev_index,
                              frames_per_buffer=CHUNK)
         second_sound = False
-        while True:
+        for i in range(0, int(RATE/CHUNK*RECORD_SECONDS)):
             data = stream.read(CHUNK)
             rms = audioop.rms(data, 2)
-            if rms > 18000:
+
+            if rms > volume:
+                print(rms)
                 if not second_sound:
                     second_sound = True
                 else:
