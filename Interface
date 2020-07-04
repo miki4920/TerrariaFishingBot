@@ -1,0 +1,49 @@
+import wx
+from threading import Thread
+from TerrariaFishingBot import TerraBot
+from pynput import keyboard
+
+
+def start_interface(name, *args):
+    ex = wx.App()
+    TerraInterface(None, name)
+    ex.MainLoop()
+
+
+class TerraInterface(wx.Frame):
+    def __init__(self, parent, title):
+        self.bot = TerraBot()
+        self.thread = Thread(target=self.bot.start_program)
+        self.thread.daemon = True
+        super(TerraInterface, self).__init__(parent, title=title, size=(250, 150))
+        self.panel = wx.Panel(self)
+        self.sld = wx.Slider(self.panel, value=18500, minValue=10000, maxValue=25000,
+                             style=wx.SL_HORIZONTAL | wx.SL_LABELS)
+        self.initialise()
+        listener = keyboard.Listener(
+            on_release=self.on_release)
+        listener.start()
+        self.thread.start()
+
+    def on_release(self, key):
+        try:
+            if key.char == "f":
+                self.bot.on = not self.bot.on
+        except AttributeError:
+            pass
+
+    def initialise(self):
+        vbox = wx.BoxSizer(wx.VERTICAL)
+        vbox.Add(self.sld, 1, flag=wx.EXPAND | wx.TOP, border=20)
+        self.sld.Bind(wx.EVT_SLIDER, self.on_scroll)
+        self.panel.SetSizer(vbox)
+        self.Centre()
+        self.Show(True)
+
+    def on_scroll(self, e):
+        value = e.GetEventObject().GetValue()
+        self.bot.volume = value
+
+
+start_interface("TerraFishingBot")
+
