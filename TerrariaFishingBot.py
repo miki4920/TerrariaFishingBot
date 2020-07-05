@@ -4,11 +4,10 @@ import time
 
 
 class TerraBot(object):
-    def __init__(self, volume=18500):
+    def __init__(self):
         self.on = False
-        self.volume = volume
-        self.mouse = Controller()
         self.sound_recorder = SoundRecorder()
+        self.mouse = Controller()
 
     def click(self, button):
         self.mouse.press(button)
@@ -21,7 +20,8 @@ class TerraBot(object):
                 self.fishing_loop()
 
     def fishing_loop(self):
+        print(1)
         self.click(Button.left)
-        if self.sound_recorder.check_volume(self.volume):
+        if self.sound_recorder.check_volume():
             self.click(Button.left)
         time.sleep(2)

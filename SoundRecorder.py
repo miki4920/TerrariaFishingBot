@@ -9,9 +9,10 @@ RECORD_SECONDS = 10
 
 
 class SoundRecorder(object):
-    def __init__(self):
+    def __init__(self, volume=18500):
         self.p = pyaudio.PyAudio()
         self.dev_index = self.get_dev_index()
+        self.volume = volume
 
     def get_dev_index(self):
         for i in range(self.p.get_device_count()):
@@ -19,7 +20,7 @@ class SoundRecorder(object):
             if dev['name'] == 'Stereo Mix (Realtek(R) Audio)' and dev['hostApi'] == 0:
                 return dev['index']
 
-    def check_volume(self, volume):
+    def check_volume(self):
         stream = self.p.open(format=FORMAT,
                              channels=CHANNELS,
                              rate=RATE,
@@ -30,8 +31,7 @@ class SoundRecorder(object):
         for i in range(0, int(RATE/CHUNK*RECORD_SECONDS)):
             data = stream.read(CHUNK)
             rms = audioop.rms(data, 2)
-
-            if rms > volume:
+            if rms > self.volume:
                 if not second_sound:
                     second_sound = True
                 else:
