@@ -20,7 +20,6 @@ class TerraBot(object):
                 self.fishing_loop()
 
     def fishing_loop(self):
-        print(1)
         self.click(Button.left)
         if self.sound_recorder.check_volume():
             self.click(Button.left)
