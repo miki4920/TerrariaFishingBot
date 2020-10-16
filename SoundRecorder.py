@@ -1,47 +1,32 @@
-import pyaudio
-import audioop
-
+import soundcard as sc
+import time
 CHUNK = 1024
-FORMAT = pyaudio.paInt16
-CHANNELS = 2
-RATE = 44100
-RECORD_SECONDS = 10
+
+
+def get_default_device():
+    default_speaker = sc.default_speaker().name
+    default_speaker_microphone = sc.get_microphone(default_speaker, include_loopback=True)
+    return default_speaker_microphone
 
 
 class SoundRecorder(object):
-    def __init__(self, volume=18500):
+    def __init__(self, volume=50):
         # Initialises recorder, gets an index of Stereo Mix Device
-        self.p = pyaudio.PyAudio()
-        self.dev_index = self.get_dev_index()
+        self.device = get_default_device()
         self.volume = volume
 
-    def get_dev_index(self):
-        # Looks through all devices and searches for Stereo Mix
-        for i in range(self.p.get_device_count()):
-            dev = self.p.get_device_info_by_index(i)
-            if dev['name'] == 'Stereo Mix (Realtek(R) Audio)' and dev['hostApi'] == 0:
-                return dev['index']
-
     def check_volume(self):
-        # Open stream
-        stream = self.p.open(format=FORMAT,
-                             channels=CHANNELS,
-                             rate=RATE,
-                             input=True,
-                             input_device_index=self.dev_index,
-                             frames_per_buffer=CHUNK)
         # Second sound variable required to ignore fishing rod sounds
         second_sound = False
-        for i in range(0, int(RATE/CHUNK*RECORD_SECONDS)):
-            # Iterates through incoming sound, converts it to a linear scale and checks if the sound is louder than
-            # current volume
-            data = stream.read(CHUNK)
-            rms = audioop.rms(data, 2)
-            if rms > self.volume:
-                if not second_sound:
-                    second_sound = True
-                else:
-                    break
-        stream.stop_stream()
-        stream.close()
-        return True
+        while True:
+            with self.device.recorder(samplerate=48000) as stream:
+                data = stream.record(numframes=CHUNK)
+                for sound_point in data:
+                    sound_point = sum(sound_point)-1
+                    if sound_point > self.volume/100:
+                        if not second_sound:
+                            second_sound = True
+                            time.sleep(1.5)
+                            break
+                        else:
+                            return True

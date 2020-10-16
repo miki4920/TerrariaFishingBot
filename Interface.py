@@ -1,10 +1,11 @@
 import wx
 from threading import Thread
+
 from TerrariaFishingBot import TerraBot
 from pynput import keyboard
 
 
-def start_interface(name, *args):
+def start_interface(name):
     ex = wx.App()
     TerraInterface(None, name)
     ex.MainLoop()
@@ -17,24 +18,24 @@ class TerraInterface(wx.Frame):
         super(TerraInterface, self).__init__(parent, title=title, size=(250, 150))
         # Creates panel, button and slider
         self.panel = wx.Panel(self)
-        self.sld = wx.Slider(self.panel, value=18500, minValue=10000, maxValue=25000,
-                             style=wx.SL_HORIZONTAL | wx.SL_LABELS)
+
+        self.slider = wx.Slider(self.panel, value=50, minValue=1, maxValue=100,
+                                style=wx.SL_HORIZONTAL | wx.SL_LABELS)
         self.btn = wx.ToggleButton(self.panel, -1, "Turn On")
-        # Adds an icon
+
         icon = wx.Icon()
         icon.CopyFromBitmap(wx.Bitmap("icon.ico", wx.BITMAP_TYPE_ANY))
         self.SetIcon(icon)
-        # Initialises interface
+
         self.initialise()
-        # Initialises I/O handler
         self.initialise_listener()
         self.initialise_bot()
 
     def initialise(self):
-    # Initialises buttons and sliders
+        # Initialises buttons and sliders
         vbox = wx.BoxSizer(wx.VERTICAL)
-        vbox.Add(self.sld, 1, flag=wx.EXPAND | wx.TOP, border=20)
-        self.sld.Bind(wx.EVT_SLIDER, self.on_scroll)
+        vbox.Add(self.slider, 1, flag=wx.EXPAND | wx.TOP, border=20)
+        self.slider.Bind(wx.EVT_SLIDER, self.on_scroll)
         vbox.Add(self.btn, 0, wx.ALIGN_CENTER)
         self.btn.Bind(wx.EVT_TOGGLEBUTTON, self.change_state)
         self.panel.SetSizer(vbox)
@@ -53,7 +54,7 @@ class TerraInterface(wx.Frame):
         thread.daemon = True
         thread.start()
 
-    def change_state(self, e=None):
+    def change_state(self, event=None):
         # Changes state of the bot all across the program and updates the button
         self.on = not self.on
         self.bot.on = self.on
@@ -69,15 +70,15 @@ class TerraInterface(wx.Frame):
             pass
 
     def update_button(self):
-    # Updates button label
+        # Updates button label
         if self.on:
             self.btn.SetLabel("Turn Off")
         else:
             self.btn.SetLabel("Turn On")
 
-    def on_scroll(self, e):
+    def on_scroll(self, event):
         # Adjusts the sound volume in the volume recorder when slider changes (Real time)
-        value = e.GetEventObject().GetValue()
+        value = event.GetEventObject().GetValue()
         self.bot.sound_recorder.volume = value
 
 
