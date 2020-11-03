@@ -22,7 +22,7 @@ class SoundRecorder(object):
             with self.device.recorder(samplerate=48000) as stream:
                 data = stream.record(numframes=CHUNK)
                 for sound_point in data:
-                    sound_point = sum(sound_point)-1
+                    sound_point = abs(sum(sound_point))
                     if sound_point > self.volume/100:
                         if not second_sound:
                             second_sound = True

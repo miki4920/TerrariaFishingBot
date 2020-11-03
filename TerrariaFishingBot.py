@@ -15,16 +15,16 @@ class TerraBot(object):
             while self.on:
                 self.fishing_loop()
 
-    def click(self, button):
+    def click(self):
         # A function responsible for clicking, 0.05 delay so the game can detect click
-        self.mouse.press(button)
+        self.mouse.press(Button.left)
         time.sleep(0.05)
-        self.mouse.release(button)
+        self.mouse.release(Button.left)
 
     def fishing_loop(self):
         # Throws the float, listens for volume, catches fish and then waits two seconds to repeat again (Reeling
         # takes approximately 2 seconds)
-        self.click(Button.left)
+        self.click()
         if self.sound_recorder.check_volume():
-            self.click(Button.left)
+            self.click()
         time.sleep(2)

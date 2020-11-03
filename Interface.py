@@ -57,6 +57,8 @@ class TerraInterface(wx.Frame):
 
     def change_state(self, *args):
         self.bot.on = not self.bot.on
+        if self.bot.on:
+            self.bot.click()
         self.btn.SetValue(self.bot.on)
         self.update_button(self.bot.on)
 
